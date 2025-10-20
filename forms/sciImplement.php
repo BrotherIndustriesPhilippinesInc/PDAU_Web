@@ -1,0 +1,288 @@
+<?php
+session_start();
+$title = 'sci_implement';
+$page = 'sci_data';
+$user_login = $_SESSION['pdau_id'];
+date_default_timezone_set('Asia/Singapore');
+
+include '../global/conn.php';
+
+include '../global/userInfo.php';
+include '../process/dashboard_details.php';
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<style type="text/css">
+  .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 20%;
+  }
+</style>
+<?php include '../global/head.php'; ?>
+
+
+<body>
+
+ <?php include '../global/header.php'; ?>
+
+  <?php include '../global/sidebar.php'; ?>
+
+   <?php include_once '../global/session_validator.php';?>
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>SCI For Implementation
+      </h1>
+    </div><!-- End Page Title -->
+   
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+             <!--  <img src="assets/img/underConstruction.png" alt="Profile"  width="1200" height="600"> -->
+              <br>
+             <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-12">
+          <div class="row">
+            <div class="col-12 overflow-auto">
+                  <table id="example" class="table table-bordless" name="tblForImplementation" style="font-size:13px;">
+                    <thead>
+                      <tr>
+                        <th scope="col">Date Approved</th>
+                        <th scope="col">RequestID</th>
+                        <th scope="col">Section</th>
+                        <th scope="col">SCI No</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Model</th>
+                        <th scope="col">Validity</th>
+                        <th scope="col">ValidityDate</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                <?php
+                if ($accountCode == 3) {
+                  $sql = "SELECT * FROM SCI_Request WHERE Status= 'APPROVED' AND Implement=0 ORDER BY SCINo ASC";
+                }
+                else{
+                  $sql = "SELECT * FROM SCI_Request WHERE RequestSection = '$section' AND Status='APPROVED' AND Implement=0 ORDER BY SCINo ASC";
+                }
+                $stmt = sqlsrv_query($conn2,$sql);
+                while($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                  $id = $row['ID'];
+                  $RequestID = $row['RequestID'];
+                  $DateModified = $row['DateModified'];
+                  $Section = $row['RequestSection'];
+                  $SCINo = $row['SCINo'];
+                  $RevNo = $row['RevNo'];
+                  $Title = $row['Title'];
+                  $Model = $row['Model'];
+                  $Validity = $row['Validity'];
+                  $ValidityDate = $row['ValidityDate'];
+                  $SCIPDF = $row['SCIPDF'];
+                  $SCINo_final = $SCINo.'-'.$RevNo;
+
+                  $sql2 = "SELECT * FROM SCI_Approval WHERE RequestID= '$RequestID'";
+                  $stmt2 = sqlsrv_query($conn2,$sql2);
+                  while($row2 = sqlsrv_fetch_array($stmt2, SQLSRV_FETCH_ASSOC)) {
+                  $MGR_date = $row2['MGR_date'];
+                    echo '
+                    <tr>
+                    <td>'.$MGR_date.'</td>
+                    <td><a class="openSCILogs" id="launchModal" href="#" data-id="'.$id.'" data-toggle="modal" data-target="#viewSCILogs">'.$RequestID.'</a></td>
+                    <td>'.$Section.'</td>
+                    <td><b>'.$SCINo_final.'</b></td>
+                    <td>'.$Title.'</td>
+                    <td>'.$Model.'</td>
+                    <td>'.$Validity.'</td>
+                    <td>'.$ValidityDate.'</td>
+                    <td>
+                    ';
+                   ?>
+                   <a href="../SCI/<?php echo $Section;?>/Request/<?php echo $RequestID;?>/<?php echo $SCIPDF;?>" target="_blank" title="Attachment" id="launchModal"><img src="../assets/img/pdf.png" width="25px;"></a>
+                   <?php
+                   if ($accounttype!='COMMON') {
+                    ?>
+                    
+                    <a href="#" onclick="
+                    setTimeout(function() {
+                      swal({
+                        title: 'SCI Implementation',
+                        text: 'Are you sure you want to Implement <?php echo $SCINo_final;?> ?',
+                        /*type: 'info',*/
+                        imageUrl:'../assets/img/question-red.png',
+                        showCancelButton: true,
+                        confirmButtonColor: 'green',
+                        confirmButtonText: 'Yes, proceed it!',
+                        cancelButtonColor: '#',
+                        cancelButtonText: 'Cancel',
+                        closeOnConfirm: false,
+                        closeOnCancel: true
+                      },
+                      function(isConfirm){
+                        if (isConfirm) {
+                          window.location = '../process/mainProcess.php?function=sciImplement&requestID=<?php echo $RequestID;?>';
+                        } else {
+
+                        }
+                      });
+                    }, 100);"
+                    class="btn btn-success btn-sm" title="Click to Implement request">Implement</a>
+                    <?php
+                   }
+
+                   ?>
+                    
+
+
+                 </td>
+               </tr>
+               <?php
+             }
+           }
+             ?>
+                  
+                    </tbody>
+
+                  </table>
+
+
+                </div>
+
+              </div>
+            </div><!-- End Recent Sales -->
+
+          </div>
+        </div><!-- End Left side columns -->
+
+        <!-- Right side columns -->
+      </div>
+    </section>
+
+    <section>
+      <div class="modal fade" id="viewSCILogs" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="displaySCILogs"></div>
+         </div>
+       </div>
+     </div>
+   </section>
+
+
+  </main>
+
+
+  <!-- ======= Footer ======= -->
+  <?php include '../global/footer.php'; ?>
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+ <?php include '../global/scripts.php'; ?>
+
+
+
+ <script type="text/javascript">
+
+    $(document).ready( function () {
+
+      new DataTable('#example', {
+        initComplete: function () {
+          this.api()
+          .columns([1,2,3,4])
+          .every(function () {
+            let column = this;
+            let title = column.header().textContent;
+
+                // Create input element
+                let input = document.createElement('input');
+                input.style.cssText = 'width:90px;font-size:14px;';
+                input.type = 'text';
+                input.placeholder = title;
+                column.header().replaceChildren(input);
+
+                // Event listener for user input
+                input.addEventListener('keyup', () => {
+                  if (column.search() !== this.value) {
+                    column.search(input.value).draw();
+                  }
+                });
+              });
+        },
+        columnDefs: [
+        { orderable: false, targets: [0,1,2,3,4,5,6,7,8] }
+        ],
+      });
+
+
+
+
+   /*   
+  
+  var table = $('#example').DataTable({
+            initComplete: function () {
+            count = 0;
+            this.api().columns([1]).every( function () {
+                var title = this.header();
+                //replace spaces with dashes
+                title = $(title).html().replace(/[\W]/g, '-');
+                var column = this;
+                var select = $('<select id="' + title + '" class="select2" ></select>')
+                    .appendTo( $(column.header()).empty() )
+                    .on( 'change', function () {
+                      //Get the "text" property from each selected data 
+                      //regex escape the value and store in array
+                      var data = $.map( $(this).select2('data'), function( value, key ) {
+                        return value.text ? '^' + $.fn.dataTable.util.escapeRegex(value.text) + '$' : null;
+                                 });
+                      
+                      //if no data selected use ""
+                      if (data.length === 0) {
+                        data = [""];
+                      }
+                      
+                      //join array into string with regex or (|)
+                      var val = data.join('|');
+                      
+                      //search for the option(s) selected
+                      column
+                            .search( val ? val : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' );
+                } );
+              
+              //use column title as selector and placeholder
+              $('#' + title).select2({
+                multiple: true,
+                closeOnSelect: false,
+                placeholder: "Select a " + title
+              });
+              
+              //initially clear select otherwise first option is selected
+              $('.select2').val(null).trigger('change');
+            } );
+        },
+        columnDefs: [
+        { orderable: false, targets: [0,1,2,3,4,5,6,7,8,9] }
+        ],
+        order: [[1, 'asc']]
+  });*/
+} );
+  </script>
+
+</body>
+
+</html>
