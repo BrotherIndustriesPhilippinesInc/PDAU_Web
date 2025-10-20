@@ -210,7 +210,18 @@ if (!is_dir("../SCI/".$section."/Request/")) {
                         $sql = "SELECT * FROM SCI_Request WHERE Status != 'FINISHED' or Status != 'CANCELLED' ORDER BY ID DESC";
                       }
                       else{
-                        $sql = "SELECT * FROM SCI_Request WHERE RequestSection = '$section' AND (Status != 'FINISHED' or Status != 'CANCELLED') ORDER BY ID DESC";
+                        //$sql = "SELECT * FROM SCI_Request WHERE RequestSection = '$section' AND (Status != 'FINISHED' or Status != 'CANCELLED') ORDER BY ID DESC";
+                        //var_dump($user_login);
+
+                        $sql = "SELECT * 
+                                  FROM SCI_Request
+                                  WHERE (RequestSection = '$section'
+                                        OR RequestSection IN (SELECT Section 
+                                                              FROM AdditionalSection 
+                                                              WHERE BIPH_ID = '$user_login'))
+                                    AND Status != 'FINISHED'
+                                    AND Status != 'CANCELLED'
+                                  ORDER BY ID DESC;";
                       }
                       
                       $stmt = sqlsrv_query($conn2,$sql);

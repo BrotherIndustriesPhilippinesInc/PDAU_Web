@@ -25,7 +25,15 @@
                   $sql = "SELECT * FROM SCI_Request WHERE Status = 'SPV APPROVAL' ORDER BY ID ASC";
                 }
                 else{
-                  $sql = "SELECT * FROM SCI_Request WHERE RequestSection = '$section' AND Status = 'SPV APPROVAL' ORDER BY ID ASC";
+                  //$sql = "SELECT * FROM SCI_Request WHERE RequestSection = '$section' AND Status = 'SPV APPROVAL' ORDER BY ID ASC";
+
+                  $sql = "SELECT * 
+                                  FROM SCI_Request
+                                  WHERE (RequestSection = '$section'
+                                        OR RequestSection IN (SELECT Section 
+                                                              FROM AdditionalSection 
+                                                              WHERE BIPH_ID = '$user_login'))
+                                    AND Status = 'SPV APPROVAL' ORDER BY ID ASC";
                 }
                 $stmt = sqlsrv_query($conn2,$sql);
                 while($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {

@@ -25,7 +25,15 @@
                   $sql = "SELECT * FROM SCI_Request WHERE Status NOT IN ('APPROVED', 'CANCELLED') ORDER BY ID ASC";
                }
                else{
-                 $sql = "SELECT * FROM SCI_Request WHERE RequestSection = '$section' AND Status NOT IN ('APPROVED', 'CANCELLED') ORDER BY ID ASC";
+                 //$sql = "SELECT * FROM SCI_Request WHERE RequestSection = '$section' AND Status NOT IN ('APPROVED', 'CANCELLED') ORDER BY ID ASC";
+
+                 $sql = "SELECT * 
+                                  FROM SCI_Request
+                                  WHERE (RequestSection = '$section'
+                                        OR RequestSection IN (SELECT Section 
+                                                              FROM AdditionalSection 
+                                                              WHERE BIPH_ID = '$user_login'))
+                                    AND Status NOT IN ('APPROVED', 'CANCELLED') ORDER BY ID ASC";
                }
                
                 $stmt = sqlsrv_query($conn2,$sql);
