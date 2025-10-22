@@ -78,7 +78,22 @@ include '../process/dashboard_details.php';
                   $sql = "SELECT * FROM SCI_MainData WHERE Status= 'Active' ORDER BY SCINo DESC";
                 }
                 else{
-                  $sql = "SELECT * FROM SCI_MainData WHERE Section = '$section' AND Status='Active' ORDER BY SCINo DESC";
+                  $sql = "SELECT * 
+                                  FROM SCI_MainData 
+                                  WHERE (Section = '$section'
+                                        OR Section IN (SELECT Section 
+                                                              FROM AdditionalSection 
+                                                              WHERE BIPH_ID = '$user_login'))
+
+                                  AND Status='Active' ORDER BY SCINo DESC";
+
+                  // $sql = "SELECT * 
+                  //                 FROM SCI_Request
+                  //                 WHERE (RequestSection = '$section'
+                  //                       OR RequestSection IN (SELECT Section 
+                  //                                             FROM AdditionalSection 
+                  //                                             WHERE BIPH_ID = '$user_login'))
+                  //                   AND Status = 'Inactive' ORDER BY ID ASC";
                 }
                 $stmt = sqlsrv_query($conn2,$sql);
                 while($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
