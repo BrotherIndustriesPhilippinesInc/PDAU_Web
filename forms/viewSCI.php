@@ -13,23 +13,59 @@ include '../global/userInfo.php';
 
 $sciNo = $_GET['sciNo'];
 
-$sql = "SELECT * FROM SCI_MainData WHERE SCINo ='$sciNo'";
- $stmt = sqlsrv_query($conn2,$sql);
-while($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-  $sci_section = $row['Section'];
-  $sci_file = $row['SCIFile'];
-  $revNo = $row['RevNo'];
+//Get additional section of user
+$user_login = $_SESSION['pdau_id'];
+// Get all additional sections
+$additionalSection = [];
+$sqlAdditional = "SELECT Section FROM AdditionalSection WHERE BIPH_ID = ?";
+$paramsAdditional = [$user_login];
+$stmtAdditional = sqlsrv_query($conn2, $sqlAdditional, $paramsAdditional);
+
+if ($stmtAdditional === false) {
+    die(print_r(sqlsrv_errors(), true));
 }
-if ($section != 'Common') {
-if ($section != $sci_section) {
-  ?>
-  <script type="text/javascript">
-    alert('Access Denied!');
-    window.location.replace('../index.php');
-  </script>
-  <?php
+
+while ($row = sqlsrv_fetch_array($stmtAdditional, SQLSRV_FETCH_ASSOC)) {
+    $additionalSection[] = $row['Section'];
 }
+
+// Get SCI data
+$sql = "SELECT Section, SCIFile, RevNo FROM SCI_MainData WHERE SCINo = ?";
+$params = [$sciNo];
+$stmt = sqlsrv_query($conn2, $sql, $params);
+
+if ($stmt === false) {
+    die(print_r(sqlsrv_errors(), true));
 }
+
+$row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+$sci_section = $row['Section'];
+$sci_file = $row['SCIFile'];
+$revNo = $row['RevNo'];
+
+// ✅ Access check
+$hasAccess = false;
+// 1. If user’s main section matches
+if ($section === $sci_section) {
+    $hasAccess = true;
+}
+// 2. Or if user has it in additional sections.
+elseif (in_array($sci_section, $additionalSection)) {
+    $hasAccess = true;
+}
+// 3. Or if section is 'Common'
+elseif ($section === 'Common') {
+    $hasAccess = true;
+}
+if (!$hasAccess) {
+    ?>
+    <script type="text/javascript">
+      alert('Access Denied!');
+      // window.location.replace('../index.php');
+    </script>
+    <?php
+}
+
 
 $fileType = pathinfo($sci_file, PATHINFO_EXTENSION);
 

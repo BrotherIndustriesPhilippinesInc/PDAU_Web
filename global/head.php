@@ -28,9 +28,7 @@
 <?php if ($title == "auto-email"): ?>
   <title>Auto Email - Process Document Auto Updater</title>
 <?php endif ?>
-<?php if ($title == "dailyAudit"): ?>
-  <title>Daily Audit - Process Document Auto Updater</title>
-<?php endif ?>
+  
 <?php if ($title == "ActivityResult"): ?>
   <title>Activity Checklist - Process Document Auto Updater</title>
 <?php endif ?>
