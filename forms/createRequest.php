@@ -60,7 +60,8 @@ $page = 'sci';
                 </li>
                 <li class="nav-item">
                   <!-- <a class="prevent-select" style="color:#009;font-weight: 700; margin-top: 8px;" id="download-tab" type="button" aria-selected="false" title="Download Template" href="../SCI/Special_Check_Item.xlsx">Download Template</a> -->
-                  <a class="prevent-select" style="color:#009;font-weight: 700; margin-top: 8px;" id="download-tab" type="button" aria-selected="false" title="Download Template" href="http://apbiphsh07/portal/99_Common/PE/New%20Application%20Forms/00_PE%20Common/REC0801-110-01_Special%20Check%20Items.xlsx">Download Template</a>
+                  <!-- <a class="prevent-select" style="color:#009;font-weight: 700; margin-top: 8px;" id="download-tab" type="button" aria-selected="false" title="Download Template" href="http://apbiphsh07/portal/99_Common/PE/New%20Application%20Forms/00_PE%20Common/REC0801-110-01_Special%20Check%20Items.xlsx">Download Template</a> -->
+                  <a class="prevent-select" style="color:#009;font-weight: 700; margin-top: 8px;" id="download-tab" type="button" aria-selected="false" title="Download Template" href="http://apbiphsh07/portal/99_Common/BPS/00%20Application%20Form/REC0802-252-00_Special%20Check%20Items.xlsx">Download Template</a>
                 </li>
               </ul>
               <div class="tab-content pt-2" id="borderedTabContent">
